@@ -1,5 +1,0 @@
-<!DOCTYPE html><html><body style="background:#000;color:#fff;text-align:center;padding:20px">
-<h2>TEST YOUTUBE SUR GITHUB</h2>
-<iframe width="360" height="215" src="https://www.youtube.com/embed/b9EkMc79ZSU?rel=0" title="Test" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<p>Si tu vois la vidéo Naruto = YouTube OK<br>Si écran noir = GitHub bloque YouTube embed, on passe sur Netlify (gratuit)</p>
-</body></html>
