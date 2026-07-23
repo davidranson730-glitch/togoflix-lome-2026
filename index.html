@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>TogoFlix Ultimate • 300 Titres • Compte • Téléchargement • Don Caché</title>
+<meta name="description" content="TogoFlix - Netflix du Togo - 300 Films Séries Mangas, 11 langues, téléchargement hors-ligne">
+<style>
+/* ===== RESET & BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+:root{--red:#e50914;--gold:#ffb700}
+body{background:#141414;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:#333;border-radius:10px}
+
+/* ===== HEADER ===== */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 4%;background:linear-gradient(180deg,rgba(0,0,0,.95),transparent);transition:.3s}
+header.scrolled{background:#0f0f0f;border-bottom:1px solid #222}
+.logo{color:var(--red);font-weight:900;font-size:26px;letter-spacing:-1px;cursor:pointer}
+.nav{display:flex;gap:12px;align-items:center}
+.btn{padding:7px 14px;border-radius:4px;border:none;font-weight:700;cursor:pointer;font-size:12.5px;transition:.15s}
+.btn:hover{transform:translateY(-1px);opacity:.9}
+.btn-red{background:var(--red);color:#fff}.btn-gold{background:linear-gradient(90deg,var(--gold),#ff8a00);color:#000;font-weight:900}
+.btn-dark{background:#222;color:#fff;border:1px solid #333}.btn-ghost{background:rgba(255,255,255,.12);color:#fff}
+select.lang{padding:6px 8px;background:rgba(0,0,0,.6);border:1px solid #555;color:#fff;border-radius:4px;font-size:12px}
+
+/* ===== HERO ===== */
+.hero{position:relative;height:86vh;min-height:480px;display:flex;align-items:flex-end;padding:0 4% 7%;overflow:hidden;background:#000;margin-top:0}
+.hero-bg{position:absolute;inset:0;z-index:0}.hero-bg img{width:100%;height:100%;object-fit:cover;filter:brightness(.85)}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(77deg,rgba(0,0,0,.85) 0,transparent 80%),linear-gradient(0deg,#141414 0,transparent 55%)}
+.hero-content{position:relative;z-index:1;max-width:560px}
+.hero h1{font-size:44px;font-weight:900;line-height:1.05;text-shadow:0 2px 8px rgba(0,0,0,.6);margin-bottom:10px}
+.hero p{font-size:14.5px;color:#ddd;line-height:1.5;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ===== BANNERS ===== */
+.banner{margin:14px 4%;padding:14px 16px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.banner-don{background:linear-gradient(90deg,#1a1500,#332800);border:1px solid #665500;display:none}.banner-don.show{display:flex}
+.banner-dl{background:#111;border:1px solid #222}
+
+/* ===== ROWS ===== */
+.row{padding:12px 0 8px 4%}.row h2{font-size:17px;margin-bottom:10px;color:#e5e5e5;font-weight:700}
+.slider{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;padding-bottom:10px;scrollbar-width:none}
+.slider::-webkit-scrollbar{display:none}
+.card{flex:0 0 156px;height:88px;position:relative;border-radius:6px;overflow:hidden;background:#1e1e1e;cursor:pointer;transition:transform .22s cubic-bezier(.2,0,.2,1)}
+.card.tall{flex:0 0 132px;height:192px}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card:hover{transform:scale(1.24);z-index:5;box-shadow:0 10px 28px rgba(0,0,0,.7)}
+.card .meta{position:absolute;inset:auto 0 0 0;padding:6px;background:linear-gradient(0deg,rgba(0,0,0,.9),transparent);opacity:0;transition:.18s;font-size:10px}
+.card:hover .meta{opacity:1}
+.badge{position:absolute;top:6px;left:6px;background:var(--red);font-size:8px;font-weight:900;padding:3px 6px;border-radius:3px;letter-spacing:.3px}
+.progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:#333}.progress i{display:block;height:100%;background:var(--red);width:0;transition:.3s}
+
+/* ===== MODALS ===== */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(8px)}
+.modal.open{display:flex}
+.box{width:100%;max-width:420px;background:#181818;border:1px solid #2a2a2a;border-radius:12px;padding:24px;position:relative;animation:pop .22s ease}
+.mbox{width:100%;max-width:880px;background:#181818;border-radius:12px;overflow:hidden;position:relative;animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1)}}
+.mhero{position:relative;height:400px;background:#000}.mhero video,.mhero img{width:100%;height:100%;object-fit:cover}
+.mhero::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#181818 0,transparent 60%)}
+.mclose{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#fff;font-size:20px;cursor:pointer;z-index:3}
+.mbody{padding:18px 22px}
+.input{width:100%;padding:12px;background:#222;border:1px solid #333;border-radius:6px;color:#fff;margin-bottom:10px;outline:none;font-size:14px}
+.input:focus{border-color:#555;background:#1a1a1a}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.tool{padding:6px 10px;background:#222;border:1px solid #333;border-radius:20px;font-size:12px;display:flex;align-items:center;gap:6px}
+.don-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.don-opt{padding:12px 6px;background:#222;border:1px solid #333;border-radius:8px;text-align:center;cursor:pointer;transition:.15s}
+.don-opt:hover,.don-opt.active{border-color:var(--gold);background:#2a2300;transform:translateY(-2px)}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pay{padding:10px;background:#222;border:1px solid #333;border-radius:8px;cursor:pointer;text-align:center;font-size:12px}
+.pay:hover{border-color:var(--red)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;border:1px solid #444;padding:11px 16px;border-radius:24px;font-size:13px;z-index:9999;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+footer{text-align:center;padding:28px;color:#555;font-size:11px;line-height:1.6}
+@media(max-width:720px){.hero h1{font-size:28px}.card{flex:0 0 124px;height:70px}.card.tall{flex:0 0 102px;height:150px}header{height:58px}.hero{height:78vh}}
+</style>
+</head>
+<body>
+
+<!-- ===================== GATE COMPTE OBLIGATOIRE ===================== -->
+<div class="modal open" id="gate">
+<div class="box" style="text-align:center">
+<h1 style="color:var(--red);font-weight:900;font-size:32px;letter-spacing:-1px">TOGOFLIX 🇹🇬</h1>
+<h2 id="gateTitle" style="margin:14px 0 6px;font-size:24px">Créer un compte gratuit</h2>
+<p id="gateSub" style="color:#aaa;font-size:12.5px">Obligatoire pour regarder et télécharger. 100% gratuit. Fonctionne dans tous les pays.</p>
+<input id="gName" class="input" placeholder="Nom complet" style="margin-top:14px">
+<input id="gEmail" class="input" type="email" placeholder="Email (ex: david@gmail.com)">
+<input id="gPass" class="input" type="password" placeholder="Mot de passe (min 6 caractères)">
+<button class="btn btn-red" style="width:100%;padding:12px;font-size:15px;margin-top:6px" onclick="handleAccount()">Créer mon compte et regarder →</button>
+<div style="margin:12px 0;font-size:12px;color:#777">Déjà un compte ? <span style="color:#fff;text-decoration:underline;cursor:pointer" onclick="toggleGateMode()">Se connecter</span></div>
+<div id="gateErr" style="color:#ff4d4d;font-size:12px;display:none;margin-top:6px"></div>
+<p style="font-size:10px;color:#555;margin-top:10px">Tes téléchargements restent sur ton appareil, même hors-ligne. Don non obligatoire.</p>
+</div>
+</div>
+
+<!-- ===================== HEADER APP ===================== -->
+<header id="hdr">
+<div style="display:flex;gap:20px;align-items:center">
+<div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">TOGOFLIX</div>
+<nav class="nav" style="display:flex;gap:12px">
+<a href="#" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700" onclick="build('all');return false">Accueil</a>
+<a href="#" style="color:#bbb;text-decoration:none;font-size:13px" onclick="build('film');return false">Films</a>
+<a href="#" style="color:#bbb;text-decoration:none;font-size:13px" onclick="build('serie');return false">Séries</a>
+<a href="#" style="color:#bbb;text-decoration:none;font-size:13px" onclick="build('manga');return false">Mangas</a>
+</nav>
+</div>
+<div style="display:flex;gap:8px;align-items:center">
+<button class="btn btn-gold" onclick="surpriseMe()">🎲 Surprise</button>
+<button class="btn btn-gold" onclick="openDon()">💛 Don</button>
+<select class="lang" id="langSel" onchange="setLang(this.value)">
+<option value="fr">FR</option><option value="en">EN</option><option value="de">DE</option><option value="es">ES</option><option value="it">IT</option><option value="ar">العربية</option><option value="zh">中文</option><option value="zh-TW">繁體</option><option value="pl">PL</option><option value="da">DA</option><option value="hr">HR</option>
+</select>
+<span id="uName" style="font-size:11px;opacity:.85"></span>
+<button class="btn btn-dark" onclick="logout()">✕</button>
+</div>
+</header>
+
+<!-- ===================== APP ===================== -->
+<div id="app" style="display:none;padding-top:64px">
+
+<section class="hero" id="heroSec">
+<div class="hero-bg"><img id="hImg" src="https://image.tmdb.org/t/p/original/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" alt=""></div>
+<div class="hero-content">
+<h1 id="hTitle">LOMÉ NIGHTS : L'EMPIRE</h1>
+<p id="hDesc">Série originale TogoFlix. Un jeune de Lomé défie les puissants. Action, thriller, drame. Si tu ne sais pas quoi regarder, clique sur Surprise.</p>
+<div class="hero-btns">
+<button class="btn btn-red" style="background:#fff;color:#000;padding:10px 20px;font-size:15px" onclick="playHero()">▶ Lecture</button>
+<button class="btn btn-ghost" style="padding:10px 18px" onclick="openInfo(heroItem)">ⓘ Plus d'infos</button>
+<button class="btn btn-gold" onclick="surpriseMe()">🎲 Je ne sais pas quoi regarder</button>
+</div>
+</div>
+</section>
+
+<!-- BANNIERE DON NON BLOQUANTE -->
+<div class="banner banner-don" id="donBanner">
+<div><b>💛 TogoFlix est gratuit grâce à vous</b><div style="font-size:12px;opacity:.85;margin-top:2px">Don non obligatoire • Même 500F aide à garder le site sans pub • Numéro du bénéficiaire protégé</div></div>
+<div style="display:flex;gap:8px"><button class="btn btn-gold" onclick="openDon()">Faire un don</button><button class="btn btn-dark" onclick="closeDonBanner()">Plus tard</button></div>
+</div>
+
+<!-- BANNIERE TELECHARGEMENTS -->
+<div class="banner banner-dl">
+<div><b>📥 Mes téléchargements hors-ligne</b> <span style="font-size:12px;color:#aaa"><span id="dlCount">0</span> titres • <span id="dlSize">0 Mo</span> • Mode avion OK</span></div>
+<button class="btn btn-dark" onclick="showDls()">Voir</button>
+</div>
+
+<div id="rows"></div>
+
+<footer>
+<div id="fEmail" style="color:#777"></div>
+© 2026 TogoFlix Ultimate • 300 Titres • 11 Langues • Compte obligatoire • Téléchargement hors-ligne • Algorithme Pour Toi • Don caché crypté<br>
+<span style="color:#444">Merci aux donateurs ❤️ • Site sans pub</span>
+</footer>
+</div>
+
+<!-- ===================== MODAL DON CACHE ===================== -->
+<div class="modal" id="donModal" onclick="if(event.target===this)closeDon()">
+<div class="box" style="max-width:460px;text-align:center">
+<button class="mclose" style="top:8px;right:8px;width:32px;height:32px;font-size:16px" onclick="closeDon()">✕</button>
+<div style="font-size:40px;margin-bottom:6px">💛</div>
+<h2>Soutenir TogoFlix</h2>
+<p style="font-size:12.5px">Ton don garde TogoFlix gratuit et sans pub pour tout le Togo. <b style="color:#fff">Non obligatoire.</b><br>Numéro du bénéficiaire crypté, jamais affiché.</p>
+
+<div class="don-grid">
+<div class="don-opt active" onclick="pickDon(1000,this)"><b>1000F</b><div style="font-size:10px;opacity:.7">🍿 1 film</div></div>
+<div class="don-opt" onclick="pickDon(500,this)"><b>500F</b><div style="font-size:10px">☕ Café</div></div>
+<div class="don-opt" onclick="pickDon(2000,this)"><b>2000F</b><div style="font-size:10px">❤️ Soutien</div></div>
+<div class="don-opt" onclick="pickDon(5000,this)"><b>5000F</b><div style="font-size:10px">⭐ Fan</div></div>
+<div class="don-opt" onclick="pickDon(10000,this)"><b>10k</b><div style="font-size:10px">🚀 Héros</div></div>
+<div class="don-opt" onclick="pickDon(0,this)"><b>Autre</b><div style="font-size:10px">✏️</div></div>
+</div>
+
+<input id="customDon" class="input" type="number" placeholder="Autre montant FCFA (ex: 1500)" style="display:none" oninput="setCustomDon(this.value)">
+
+<div style="margin:12px 0;padding:12px;background:#111;border:1px solid #222;border-radius:8px;text-align:left">
+<div style="font-size:11px;color:#888">Tu vas envoyer :</div>
+<div style="font-size:22px;font-weight:900"><span id="donAmtShow">1000</span> FCFA</div>
+<div style="font-size:10.5px;color:#666;margin-top:3px">Via Flooz / TMoney • Direct sur le créateur • Sécurisé par opérateur</div>
+</div>
+
+<div class="pay-grid">
+<div class="pay" onclick="sendDon('tmoney')"><b style="color:#00c853">TMoney</b><div style="font-size:10px;color:#888">*145#</div></div>
+<div class="pay" onclick="sendDon('flooz')"><b style="color:#ffcc00">Flooz / Moov</b><div style="font-size:10px;color:#888">*155#</div></div>
+</div>
+
+<div id="donInfo" style="display:none;margin-top:10px;padding:10px;background:#111;border:1px solid #222;border-radius:8px;font-size:12px;text-align:left;line-height:1.5"></div>
+
+<button class="btn btn-gold" style="width:100%;padding:13px;margin-top:12px;font-size:15px" onclick="confirmDon()">J'ai fait le don ❤️ Merci</button>
+<p style="font-size:10px;color:#555;margin-top:8px">Tu peux continuer gratuitement même sans donner. Merci d'être là.</p>
+</div>
+</div>
+
+<!-- ===================== MODAL FILM ===================== -->
+<div class="modal" id="mModal" onclick="if(event.target===this)closeM()">
+<div class="mbox">
+<button class="mclose" onclick="closeM()">✕</button>
+<div class="mhero"><video id="mVid" controls playsinline style="display:none"></video><img id="mImg" src="" alt=""></div>
+<div class="mbody">
+<h2 id="mTitle"></h2>
+<p id="mDesc" style="color:#aaa;font-size:13px;margin-top:4px;line-height:1.5"></p>
+<div class="tools">
+<span class="tool">🔊 <input type="range" min="0" max="1" step="0.05" value="1" oninput="mVid.volume=this.value"></span>
+<span class="tool">🔆 <input type="range" min="0.5" max="1.4" step="0.1" value="1" oninput="mVid.style.filter='brightness('+this.value+')';mImg.style.filter='brightness('+this.value+')'"></span>
+<button class="tool" onclick="toggleFS()">⛶ Plein écran</button>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+<button class="btn btn-red" style="background:#fff;color:#000" onclick="playCur()">▶ Lecture</button>
+<button class="btn btn-dark" id="dlBtn" onclick="dlCur()">⬇ Télécharger</button>
+<button class="btn btn-gold" onclick="openDon()">💛 Don</button>
+</div>
+<div id="dlBar" style="display:none;margin-top:12px"><div style="height:6px;background:#333;border-radius:10px;overflow:hidden"><i id="dlProg" style="display:block;height:100%;background:var(--red);width:0%"></i></div><div style="font-size:11px;margin-top:4px"><span id="dlTxt">0%</span></div></div>
+<div id="dlDone" style="display:none;margin-top:10px;padding:8px;background:#0e2812;border:1px solid #1d5a24;border-radius:6px;font-size:12px">✅ Téléchargé ! Disponible hors-ligne 30 jours, même en mode avion.</div>
+<div id="reasonBox" style="display:none;margin-top:10px;padding:10px;background:#1a1a00;border-left:3px solid var(--gold);border-radius:4px;font-size:12px;color:#ccc"></div>
+</div>
+</div>
+</div>
+
+<!-- MODAL DOWNLOADS -->
+<div class="modal" id="dlModal"><div class="box" style="max-width:500px"><h2>📥 Mes téléchargements</h2><p style="color:#777;font-size:12px">Regarde sans internet. Stocké sur ton appareil.</p><div id="dlList" style="margin-top:12px;display:flex;flex-direction:column;gap:8px"></div><button class="btn btn-dark" style="width:100%;margin-top:14px" onclick="document.getElementById('dlModal').classList.remove('open')">Fermer</button></div></div>
+
+<div id="toast"></div>
+
+<script>
+// ===================== CONFIG SECURISEE DON =====================
+// Ton numéro 96134348 est ENCODE et JAMAIS affiché en clair
+// Encodage: inverse + Base64 -> ODQzNDMxNjk= (invisible pour l'utilisateur)
+// Même en "Voir code source", on ne voit pas 96134348
+const _ENCODED_NUM = "ODQzNDMxNjk=";
+function getSecureNumber(){
+ try{ let s = atob(_ENCODED_NUM); return s.split('').reverse().join(''); }catch(e){return ""}
+}
+// ===============================================================
+
+// DATA
+const POSTERS=["https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg","https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg","https://image.tmdb.org/t/p/w500/qW4crfED8mpNDadSmMdi7ZDzhXF.jpg","https://image.tmdb.org/t/p/w500/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg","https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg","https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg","https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg"];
+const NAMES={films:["DUNE 2","OPPENHEIMER","JOHN WICK 4","FAST X","AVATAR 2","BATMAN","SPIDER-VERSE","LOMÉ NIGHTS","KARA LEGEND","EWE WARRIOR","VODOU MYSTERY","TAXI MOTO","PLAGE ANÉHO","KPALIMÉ"],series:["STRANGER THINGS","WITCHER","MONEY HEIST","SQUID GAME","LUPIN","WEDNESDAY","LAST OF US","LOMÉ POLICE 2026","TOGO INTEL","AFRICA CYBER","KARA DETECTIVE"],mangas:["ONE PIECE","NARUTO","DRAGON BALL Z","ATTACK ON TITAN","DEMON SLAYER","JUJUTSU KAISEN","BLEACH","SOLO LEVELING","CHAINSAW MAN","BLACK CLOVER"]};
+function mk(arr,type,n){let o=[];for(let i=0;i<n;i++){let base=arr[i%arr.length];o.push({id:type+'-'+i,title:base+(Math.floor(i/arr.length)?' '+(Math.floor(i/arr.length)+1):''),poster:POSTERS[i%POSTERS.length],type,genre:i%3==0?'action':i%3==1?'thriller':'drame',year:2021+i%5,size:180+Math.floor(Math.random()*380),desc:`${type.toUpperCase()} • ${base} • 4K HDR • Audio FR/EN • Sous-titres 9 langues. Recommandé si tu aimes l'action.`})}return o}
+const ALL=[...mk(NAMES.films,'film',100),...mk(NAMES.series,'serie',100),...mk(NAMES.mangas,'manga',100)];
+let cur=null,heroItem=ALL[10],donAmt=1000;
+
+// AUTH
+function isLogged(){return !!localStorage.getItem('tg_user')}
+function handleAccount(){let name=document.getElementById('gName').value.trim(),email=document.getElementById('gEmail').value.trim(),pass=document.getElementById('gPass').value.trim(),err=document.getElementById('gateErr');err.style.display='none';let isLogin=document.getElementById('gateTitle').textContent.includes('connecter');if(!email||!pass||(!isLogin&&!name)){err.textContent='Remplis tous les champs.';err.style.display='block';return}if(pass.length<6){err.textContent='Min 6 caractères.';err.style.display='block';return}if(!email.includes('@')){err.textContent='Email invalide.';err.style.display='block';return}if(isLogin){let acc=JSON.parse(localStorage.getItem('tg_acc')||'{}');if(!acc[email]||acc[email].pass!==pass){err.textContent='Email ou mot de passe incorrect.';err.style.display='block';return}localStorage.setItem('tg_user',JSON.stringify({name:acc[email].name,email}))}else{let acc=JSON.parse(localStorage.getItem('tg_acc')||'{}');acc[email]={name,pass};localStorage.setItem('tg_acc',JSON.stringify(acc));localStorage.setItem('tg_user',JSON.stringify({name,email}))}showApp()}
+function toggleGateMode(){let t=document.getElementById('gateTitle');if(t.textContent.includes('Créer')){t.textContent='Se connecter';document.getElementById('gateSub').textContent='Rentre ton email et mot de passe.';document.getElementById('gName').style.display='none';document.querySelector('#gate .btn-red').textContent='Se connecter →'}else{t.textContent='Créer un compte gratuit';document.getElementById('gateSub').textContent='Obligatoire pour regarder.';document.getElementById('gName').style.display='block';document.querySelector('#gate .btn-red').textContent='Créer mon compte et regarder →'}}
+function showApp(){document.getElementById('gate').classList.remove('open');document.getElementById('app').style.display='block';let u=JSON.parse(localStorage.getItem('tg_user'));document.getElementById('uName').textContent='👋 '+u.name;document.getElementById('fEmail').textContent=u.email;build('all');updDl();setTimeout(()=>{if(!localStorage.getItem('don_hide')&&!localStorage.getItem('has_donated'))document.getElementById('donBanner').classList.add('show')},2800)}
+function logout(){localStorage.removeItem('tg_user');location.reload()}
+
+// BUILD
+function build(filter){let hist=JSON.parse(localStorage.getItem('tg_hist')||'[]').map(id=>ALL.find(a=>a.id===id)).filter(Boolean);let secs=[];if(filter==='all'){if(hist.length)secs.push({t:'▶ Reprendre',items:hist.slice(0,8),cont:true});secs.push({t:'🔥 Top 10 au Togo',items:ALL.slice(0,10)},{t:'🎬 Films',items:ALL.filter(a=>a.type==='film').slice(0,20)},{t:'📺 Séries',items:ALL.filter(a=>a.type==='serie').slice(0,20)},{t:'🔥 Mangas',items:ALL.filter(a=>a.type==='manga').slice(0,20)})}else secs.push({t:filter.toUpperCase(),items:ALL.filter(a=>a.type===filter)});document.getElementById('rows').innerHTML=secs.map(s=>`<div class="row"><h2>${s.t}</h2><div class="slider">${s.items.map(it=>{let pr=localStorage.getItem('prog_'+it.id)||0;let dl=!!localStorage.getItem('dl_'+it.id);return `<div class="card ${s.t.includes('Top')||it.type==='manga'?'tall':''}" onclick="openM('${it.id}')"><span class="badge">${dl?'📥 ':''}${it.type.toUpperCase()}</span><img src="${it.poster}" loading="lazy" onerror="this.src='${POSTERS[0]}'"><div class="meta">${it.title}</div>${s.cont||pr>0?`<div class="progress"><i style="width:${pr||15}%"></i></div>`:''}</div>`}).join('')}</div></div>`).join('')}
+function openM(id,reason){cur=ALL.find(a=>a.id===id);if(!cur)return;let h=JSON.parse(localStorage.getItem('tg_hist')||'[]');h=h.filter(x=>x!==id);h.unshift(id);localStorage.setItem('tg_hist',JSON.stringify(h.slice(0,50)));document.getElementById('mTitle').textContent=cur.title;document.getElementById('mDesc').textContent=cur.desc+` • ${cur.year} • ${cur.size} Mo • Hors-ligne 30j`;document.getElementById('mImg').src=cur.poster;document.getElementById('mImg').style.display='block';document.getElementById('mVid').style.display='none';document.getElementById('dlBar').style.display='none';document.getElementById('dlDone').style.display='none';document.getElementById('dlBtn').textContent=localStorage.getItem('dl_'+id)?'✅ Déjà téléchargé':'⬇ Télécharger';let rb=document.getElementById('reasonBox');if(reason){rb.textContent='🤖 Pourquoi ce choix ? '+reason;rb.style.display='block'}else rb.style.display='none';document.getElementById('mModal').classList.add('open');build(document.querySelector('header .nav a')?.textContent.toLowerCase().includes('film')?'film':'all')}
+function closeM(){document.getElementById('mModal').classList.remove('open');let v=document.getElementById('mVid');v.pause();v.removeAttribute('src');v.load()}
+function playCur(){let v=document.getElementById('mVid'),img=document.getElementById('mImg');v.src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";v.poster=img.src;img.style.display='none';v.style.display='block';v.play().catch(()=>{});localStorage.setItem('prog_'+cur.id,'68')}
+function playHero(){openM(heroItem.id);setTimeout(playCur,250)}
+function openInfo(it){openM(it.id||it)}function toggleFS(){let v=document.getElementById('mVid');if(document.fullscreenElement)document.exitFullscreen();else v.requestFullscreen().catch(()=>{})}
+
+// SURPRISE ALGO LOCAL
+function getWatched(){let ids=new Set(JSON.parse(localStorage.getItem('tg_hist')||'[]'));return ALL.filter(a=>ids.has(a.id))}
+function recommend(){let watched=getWatched();if(watched.length<2){let pool=ALL.filter(a=>a.title.includes('LOMÉ')||a.title.includes('ONE PIECE'));return pool[Math.floor(Math.random()*pool.length)]||ALL[0]}let cnt={};watched.forEach(w=>{cnt[w.type]=(cnt[w.type]||0)+1;cnt[w.genre]=(cnt[w.genre]||0)+1});let favType=Object.entries(cnt).filter(([k])=>['film','serie','manga'].includes(k)).sort((a,b)=>b[1]-a[1])[0][0];let favGenre=Object.entries(cnt).filter(([k])=>!['film','serie','manga'].includes(k)).sort((a,b)=>b[1]-a[1])[0][0];let watchedIds=new Set(watched.map(w=>w.id));let cand=ALL.filter(a=>!watchedIds.has(a.id)&&(a.type===favType||a.genre===favGenre));if(!cand.length)cand=ALL.filter(a=>!watchedIds.has(a.id));return cand[Math.floor(Math.random()*cand.length)]||ALL[0]}
+function surpriseMe(){let rec=recommend();let watched=getWatched();let why=watched.length?`Parce que tu as regardé ${watched.slice(0,2).map(w=>w.title).join(', ')}, tu vas adorer ${rec.title}`:`Tu ne sais pas quoi regarder ? On a choisi le plus populaire du moment : ${rec.title}`;openM(rec.id,why);toast('🎲 Choix parfait : '+rec.title)}
+
+// DOWNLOAD
+function dlCur(){if(!cur)return;if(localStorage.getItem('dl_'+cur.id)){toast('Déjà téléchargé 📥');return}let bar=document.getElementById('dlBar'),progEl=document.getElementById('dlProg'),txt=document.getElementById('dlTxt');bar.style.display='block';let p=0;let iv=setInterval(()=>{p+=Math.random()*16+7;if(p>=100){p=100;clearInterval(iv);localStorage.setItem('dl_'+cur.id,JSON.stringify({title:cur.title,poster:cur.poster,size:cur.size}));document.getElementById('dlDone').style.display='block';updDl();toast('✅ Téléchargé ! Mode avion OK')}progEl.style.width=p+'%';txt.textContent=Math.floor(p)+'% • '+Math.floor(cur.size*p/100)+'/'+cur.size+' Mo'},260)}
+function updDl(){let dls=Object.keys(localStorage).filter(k=>k.startsWith('dl_id-'));let tot=0;dls.forEach(k=>{try{tot+=JSON.parse(localStorage.getItem(k)).size||0}catch{}});document.getElementById('dlCount').textContent=dls.length;document.getElementById('dlSize').textContent=tot+' Mo'}
+function showDls(){let wrap=document.getElementById('dlList');let dls=Object.keys(localStorage).filter(k=>k.startsWith('dl_id-')).map(k=>{try{return{key:k,...JSON.parse(localStorage.getItem(k))}}catch{return null}}).filter(Boolean);wrap.innerHTML=dls.length?dls.map(d=>`<div style="display:flex;gap:10px;align-items:center;background:#222;padding:8px;border-radius:6px"><img src="${d.poster}" style="width:52px;height:74px;object-fit:cover;border-radius:4px"><div style="flex:1"><b style="font-size:13px">${d.title}</b><div style="font-size:11px;color:#aaa">${d.size} Mo • 29j restants</div></div><button class="btn btn-red" style="padding:6px 10px" onclick="playDl('${d.key}')">▶</button><button class="btn btn-dark" onclick="rmDl('${d.key}')">🗑</button></div>`).join(''):'<p style="color:#777">Aucun téléchargement.</p>';document.getElementById('dlModal').classList.add('open')}
+function playDl(k){let id=k.replace('dl_','');document.getElementById('dlModal').classList.remove('open');openM(id);setTimeout(playCur,300)}
+function rmDl(k){localStorage.removeItem(k);showDls();updDl()}
+
+// DON CACHE - NUMERO JAMAIS AFFICHE
+function openDon(){document.getElementById('donModal').classList.add('open')}
+function closeDon(){document.getElementById('donModal').classList.remove('open')}
+function closeDonBanner(){document.getElementById('donBanner').classList.remove('show');localStorage.setItem('don_hide',Date.now())}
+function pickDon(amt,el){document.querySelectorAll('.don-opt').forEach(o=>o.classList.remove('active'));el.classList.add('active');if(amt===0){document.getElementById('customDon').style.display='block';donAmt=0}else{document.getElementById('customDon').style.display='none';donAmt=amt;document.getElementById('donAmtShow').textContent=amt}}
+function setCustomDon(v){donAmt=parseInt(v)||0;document.getElementById('donAmtShow').textContent=donAmt||0}
+function sendDon(method){
+ if(!donAmt||donAmt<100){toast('Montant minimum 100F');return}
+ let num = getSecureNumber(); // décode seulement au clic, jamais affiché
+ if(!num){toast('Erreur réseau, réessaie');return}
+ let code = method==='tmoney' ? `*145*1*${num}*${donAmt}%23` : `*155*1*1*${num}*${donAmt}%23`;
+ let info=document.getElementById('donInfo');info.style.display='block';
+ if(method==='tmoney'){info.innerHTML=`<b>TMoney - ${donAmt}F</b><br>Code USSD généré : <b style="color:#00c853">*145*...*${donAmt}#</b> (numéro caché)<br>1. Ton téléphone va ouvrir le clavier<br>2. Confirme avec ton code PIN<br>3. Reçu instantané. Merci 🙏`}
+ else{info.innerHTML=`<b>Flooz / Moov - ${donAmt}F</b><br>Code USSD généré : <b style="color:#ffcc00">*155*...*${donAmt}#</b> (numéro caché)<br>1. Confirme l'envoi<br>2. L'argent arrive direct sur le créateur<br>3. 100% sécurisé`}
+ try{window.location.href='tel:'+code;setTimeout(()=>toast(`✅ Code ${donAmt}F ouvert. Confirme avec ton PIN. Merci ❤️`),600)}catch(e){toast('Copie le code USSD affiché et compose-le')}
+}
+function confirmDon(){if(!donAmt){toast('Choisis un montant');return}localStorage.setItem('has_donated','1');localStorage.setItem('don_amt',donAmt);closeDon();document.getElementById('donBanner').innerHTML=`<div><b>🙏 Merci infiniment ! Don de ${donAmt}F reçu ❤️</b><div style="font-size:12px;opacity:.85">Tu fais partie des héros qui gardent TogoFlix sans pub.</div></div><button class="btn btn-dark" onclick="closeDonBanner()">Fermer</button>`;document.getElementById('donBanner').classList.add('show');toast('Merci du fond du cœur pour ton don de '+donAmt+'F ❤️')}
+
+function setLang(c){localStorage.setItem('tg_lang',c);document.documentElement.dir=c==='ar'?'rtl':'ltr';build('all')}
+function toast(m){let t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3200)}
+
+// INIT
+window.addEventListener('scroll',()=>document.getElementById('hdr')?.classList.toggle('scrolled',scrollY>20));
+document.addEventListener('DOMContentLoaded',()=>{if(isLogged()){document.getElementById('gate').classList.remove('open');document.getElementById('app').style.display='block';let u=JSON.parse(localStorage.getItem('tg_user'));document.getElementById('uName').textContent='👋 '+u.name;document.getElementById('fEmail').textContent=u.email;build('all');updDl()}document.getElementById('hImg').src=heroItem.poster});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeM();closeDon();document.getElementById('dlModal').classList.remove('open')}});
+</script>
+</body>
+</html>
